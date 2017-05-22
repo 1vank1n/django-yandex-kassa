@@ -57,7 +57,7 @@ class BaseFormView(FormView):
     def form_invalid(self, form):
         errors = self.get_form_errors(form)
 
-        msg = 'Ошибка при валидации формы проверки платежа '
+        msg = u'Ошибка при валидации формы проверки платежа '
         logger.info(msg, extra=dict(errors=errors))
         logger.debug(msg + str(errors))
 
@@ -78,7 +78,7 @@ class BaseFormView(FormView):
             try:
                 payment.save()
             except Exception as e:
-                logger.warn('Ошибка при сохранение платеж', exc_info=True)
+                logger.warn(u'Ошибка при сохранение платеж', exc_info=True)
 
         content = self.get_xml(data)
         return self.get_response(content)
@@ -97,7 +97,7 @@ class CheckOrderView(BaseFormView):
         order_num = cd['customerNumber']
 
         if not self.check_md5(cd):
-            logger.warn('Ошибка при проверке MD5 платеж #%s' % order_num, exc_info=True)
+            logger.warn(u'Ошибка при проверке MD5 платеж #%s' % order_num, exc_info=True)
             content = self.get_xml(dict(code=1))
             return self.get_response(content)
 
@@ -111,11 +111,11 @@ class CheckOrderView(BaseFormView):
             try:
                 payment.save()
             except Exception as e:
-                logger.warn('Ошибка при сохранение платеж #%s' % order_num, exc_info=True)
+                logger.warn(u'Ошибка при сохранение платеж #%s' % order_num, exc_info=True)
                 content = self.get_xml(dict(code=200))
                 return self.get_response(content)
         else:
-            logger.info('Платеж с номером #%s не найден' % order_num, exc_info=True)
+            logger.info(u'Платеж с номером #%s не найден' % order_num, exc_info=True)
             content = self.get_xml(dict(code=200))
             return self.get_response(content)
 
@@ -124,7 +124,7 @@ class CheckOrderView(BaseFormView):
         data = dict(code=0, shopId=conf.SHOP_ID, invoiceId=cd['invoiceId'],
                     performedDatetime=payment.performed_datetime.isoformat())
         content = self.get_xml(data)
-        logger.debug('Ответ CheckOrderView: "%s"' % content)
+        logger.debug(u'Ответ CheckOrderView: "%s"' % content)
         return self.get_response(content)
 
     def get_xml_element(self, **params):
@@ -141,7 +141,7 @@ class PaymentAvisoView(BaseFormView):
         order_num = cd['customerNumber']
 
         if not self.check_md5(cd):
-            msg = 'Ошибка при проверке MD5 платеж #%s' % order_num
+            msg = u'Ошибка при проверке MD5 платеж #%s' % order_num
             logger.warn(msg, exc_info=True)
             content = self.get_xml(dict(code=1, message=msg))
             return self.get_response(content)
@@ -154,9 +154,9 @@ class PaymentAvisoView(BaseFormView):
         try:
             payment.save()
             payment.send_signals()
-            logger.info('Платеж #%s оплачен' % order_num)
+            logger.info(u'Платеж #%s оплачен' % order_num)
         except Exception as e:
-            msg = 'Ошибка при сохранение платеж #%s' % order_num
+            msg = u'Ошибка при сохранение платеж #%s' % order_num
             logger.warn(msg, exc_info=True)
             content = self.get_xml(dict(code=200, message=msg))
             return self.get_response(content)
@@ -167,7 +167,7 @@ class PaymentAvisoView(BaseFormView):
             payment.performed_datetime.isoformat(),
             0, payment.invoice_id, payment.shop_id
         )
-        logger.debug('Ответ PaymentAvisoView: "%s"' % content)
+        logger.debug(u'Ответ PaymentAvisoView: "%s"' % content)
         return self.get_response(content)
 
     def get_xml_element(self, **params):
