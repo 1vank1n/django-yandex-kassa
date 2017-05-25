@@ -147,6 +147,7 @@ class PaymentAvisoView(BaseFormView):
             return self.get_response(content)
 
         payment = form.get_payment()
+        payment.order_number = cd['orderNumber']
         payment.status = Payment.STATUS.SUCCESS
         if not payment.performed_datetime:
             payment.performed_datetime = datetime.now()
