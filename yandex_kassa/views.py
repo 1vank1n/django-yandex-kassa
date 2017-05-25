@@ -50,7 +50,7 @@ class BaseFormView(FormView):
         return ElementTree.tostring(elem, 'utf-8', 'xml')
 
     def get_response(self, content):
-        content = '<?xml version="1.0" encoding="UTF-8"?>\n' + content
+        content = u'<?xml version="1.0" encoding="UTF-8"?>\n' + content
         return HttpResponse(content.encode('utf-8'),
                             content_type='application/xml')
 
